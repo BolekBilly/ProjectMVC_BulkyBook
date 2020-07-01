@@ -25,7 +25,7 @@ namespace BulkyBook.Areas.Admin.Controllers
 
         public IActionResult Upsert(int? id)
         {
-            var category = new Category();
+            Category category = new Category();
             if (id == null)
             {
                 //this is for create
@@ -50,6 +50,7 @@ namespace BulkyBook.Areas.Admin.Controllers
                 if (category.Id == 0)
                 {
                     _unitOfWork.Category.Add(category);
+                    
                 }
                 else
                 {
@@ -60,6 +61,7 @@ namespace BulkyBook.Areas.Admin.Controllers
             }
             return View(category);
         }
+
 
         #region API CALLS
 
@@ -80,7 +82,8 @@ namespace BulkyBook.Areas.Admin.Controllers
             }
             _unitOfWork.Category.Remove(objFromDb);
             _unitOfWork.Save();
-            return Json(new { success = true, message = "Delete Succesful" });
+            return Json(new { success = true, message = "Delete Successful" });
+
         }
 
         #endregion

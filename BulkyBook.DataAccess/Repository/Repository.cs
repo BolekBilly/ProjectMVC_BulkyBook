@@ -1,92 +1,95 @@
-﻿using System;
+﻿using BulkyBook.DataAccess.Data;
+using BulkyBook.DataAccess.Repository.IRepository;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
-using BulkyBook.DataAccess.Data;
-using BulkyBook.DataAccess.Repository.IRepository;
-using Microsoft.EntityFrameworkCore;
 
 namespace BulkyBook.DataAccess.Repository
 {
-	public class Repository<T> : IRepository<T> where T : class
-	{
-		private readonly ApplicationDbContext _db;
-		internal DbSet<T> dbSet;
+    public class Repository<T> : IRepository<T> where T : class
+    {
 
-		public Repository(ApplicationDbContext db)
-		{
-			_db = db;
-			this.dbSet = _db.Set<T>();
-		}
+        private readonly ApplicationDbContext _db;
+        internal DbSet<T> dbSet;
 
-		public void Add(T entity)
-		{
-			dbSet.Add(entity);
-		}
+        public Repository(ApplicationDbContext db)
+        {
+            _db = db;
+            this.dbSet = _db.Set<T>();
+        }
 
-		public T Get(int id)
-		{
-			return dbSet.Find(id);
-		}
+        public void Add(T entity)
+        {
+            dbSet.Add(entity);
+        }
 
-		public IEnumerable<T> GetAll(Expression<Func<T, bool>> filter = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, string includeProperties = null)
-		{
-			IQueryable<T> query = dbSet;
+        public T Get(int id)
+        {
+            return dbSet.Find(id);
+        }
 
-			if (filter != null)
-			{
-				query = query.Where(filter);
-			}
+        public IEnumerable<T> GetAll(Expression<Func<T, bool>> filter = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, string includeProperties = null)
+        {
+            IQueryable<T> query = dbSet;
 
-			if (includeProperties != null)
-			{
-				foreach (var includeProp in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-				{
-					query = query.Include(includeProp);
-				}
-			}
+            if(filter != null)
+            {
+                query = query.Where(filter);
+            }
 
-			if (orderBy != null)
-			{
-				return orderBy(query).ToList();
-			}
-			return query.ToList();
-		}
-		public T GetFirstOrDefault(Expression<Func<T, bool>> filter = null, string includeProperties = null)
-		{
-			IQueryable<T> query = dbSet;
+            if(includeProperties != null)
+            {
+                foreach (var includeProp in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProp);
+                }
+            }
 
-			if (filter != null)
-			{
-				query = query.Where(filter);
-			}
+            if (orderBy != null)
+            {
+                return orderBy(query).ToList();
+            }
+            return query.ToList();
+        }
 
-			if (includeProperties != null)
-			{
-				foreach (var includeProp in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-				{
-					query = query.Include(includeProp);
-				}
-			}
+        public T GetFirstOrDefault(Expression<Func<T, bool>> filter = null, string includeProperties = null)
+        {
+            IQueryable<T> query = dbSet;
 
-			return query.FirstOrDefault();
-		}
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
 
-		public void Remove(int id)
-		{
-			T entity = dbSet.Find(id);
-			Remove(entity);
-		}
+            if (includeProperties != null)
+            {
+                foreach (var includeProp in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProp);
+                }
+            }
 
-		public void Remove(T entity)
-		{
-			dbSet.Remove(entity);
-		}
+            
+            return query.FirstOrDefault();
+        }
 
-		public void RemoveRange(IEnumerable<T> entity)
-		{
-			dbSet.RemoveRange(entity);
-		}
-	}
+        public void Remove(int id)
+        {
+            T entity = dbSet.Find(id);
+            Remove(entity);
+        }
+
+        public void Remove(T entity)
+        {
+            dbSet.Remove(entity);
+        }
+
+        public void RemoveRange(IEnumerable<T> entity)
+        {
+            dbSet.RemoveRange(entity);
+        }
+    }
 }
